@@ -106,6 +106,9 @@
         }
     template:
         <Message wx:if="{{popErrorMsg}}" :msg.sync='popErrorMsg'></Message>
+    use:
+      Util.ErrorTips(this, msg, time);
+      参数说明：this:page,this指向； msg：提示语 ; time:显示时长 ms
 
 2.getUserInfo组件：授权组件
     script:
