@@ -1,0 +1,165 @@
+<style lang="less">
+button {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+.button-hover {
+  background: none;
+  color: none;
+}
+button::after {
+  border-radius: 0;
+  border: 0 none;
+}
+
+/*全局错区提示信息样式*/
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+import API from './utils/api.js'
+import wxRequest from './utils/wxRequest.js'
+import util from './utils/util.js'
+import AuthProvider from './utils/AuthProvider.js'
+
+export default class extends wepy.app {
+  config = {
+    pages: ['pages/index'],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'WeChat',
+      navigationBarTextStyle: 'black'
+    }
+  }
+
+  globalData = {
+    userInfo: null
+  }
+
+  constructor() {
+    super()
+    this.use('requestfix')
+    this.use('promisify')
+  }
+
+  onLaunch() {}
+  /**
+   * //授权弹框
+   * @param res
+   * @param callback
+   */
+  getUserInfo(res) {
+    let _this = this
+    console.log('---获取用户信息---')
+    console.log(res.detail)
+    console.log('----------------')
+    if (res.detail.errMsg === 'getUserInfo:fail auth deny') {
+      wx.showModal({
+        title: '用户授权',
+        content: '本小程序需用户授权，请重新点击按钮授权。',
+        mask: true,
+        confirmColor: '#F45C43',
+        success: function(res) {}
+      })
+    } else if (res.detail.errMsg === 'getUserInfo:ok') {
+      let userInfo = res.detail.userInfo
+      _this.globalData.userInfo = userInfo
+      wx.setStorageSync('userInfo', userInfo)
+      _this.wxLogin(res.detail.encryptedData, res.detail.iv)
+    }
+  }
+
+  /**
+   * 登录系统换去unionid，opneid
+   * @param encryptedData
+   * @param iv
+   */
+  wxLogin(encryptedData, iv) {
+    wx.login({
+      success: function(res) {
+        if (res.code) {
+          let params = {
+            appid: API.APP_ID,
+            code: res.code,
+            encryptedData: encryptedData,
+            iv: iv
+          }
+          wxRequest
+            .fetch(API.authLogin, null, params, 'POST')
+            .then(result => {
+              if (result.data.resultCode === '100') {
+                wx.setStorageSync('unionId', result.data.resultContent.unionId) //存储unionId
+                wx.setStorageSync('openId', result.data.resultContent.openId) //存储openId
+                AuthProvider.onLogin()
+              } else {
+                //打印错误日志
+              }
+            })
+            .catch(req => {
+              console.log(req)
+            })
+        }
+      }
+    })
+  }
+
+  /**
+   * 获取用户信息，与授权与否
+   * @param canIUse
+   * @param callback
+   */
+  getGlobalData(canIUse, callback) {
+    let _this = this
+    let userInfos = wx.getStorageSync('userInfo')
+    if (userInfos.hasOwnProperty('nickName')) {
+      //判断是否在缓存中
+      callback({
+        userInfo: userInfos,
+        hasUserInfo: true
+      })
+    } else {
+      if (_this.globalData.userInfo) {
+        //有可能在回调拿到，但是还没有存入到缓存中
+        callback({
+          userInfo: _this.globalData.userInfo,
+          hasUserInfo: true
+        })
+        return
+      } else if (canIUse) {
+        //可能回调没有拿到，需要异步拿
+        _this.userInfoReadyCallback = res => {
+          callback({
+            userInfo: res.userInfo,
+            hasUserInfo: true
+          })
+        }
+      } else if (!canIUse) {
+        //微信版本不支持button授权，导致不能授权成功。
+        wx.showModal({
+          // 向用户提示升级至最新版微信。
+          title: '提示',
+          confirmColor: '#F45C43',
+          content: '微信版本过低，会导致小程序不能正常使用！请升级。',
+          mask: true
+        })
+        callback({
+          userInfo: null,
+          hasUserInfo: false
+        })
+      } else {
+        //没有授权
+        callback({
+          userInfo: null,
+          hasUserInfo: false
+        })
+      }
+    }
+  }
+}
+</script>

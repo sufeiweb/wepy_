@@ -1,0 +1,162 @@
+全局函数：
+一、util.js :
+1.pageGo
+/*
+* 页面跳转函数
+* @param path 跳转路径 部分可携带参数
+* @param type 跳转类型
+* @param num 是否为返回上级
+*/
+// 页面跳转数据字典
+// 1:navigate  保留当前页面，跳转到应用内的某个页面，使用wx.navigateBack可以返回到原页面  可加参数
+// 2:redirectTo 关闭当前页面，跳转到应用内的某个页面。 可加参数
+// 3:reLaunch 关闭所有页面，打开到应用内的某个页面。 可加参数
+// 4:switchTab 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面  不可加参数
+// 5:navigateBack 关闭当前页面，返回上一页面或多级页面。可通过 getCurrentPages()) 获取当前的页面栈，决定需要返回几层
+
+2.openShare
+/**
+ * 分享集成函数
+ * @param title 分享的标题F
+ * @param path 分享的页面路径
+ * @param imageUrl 分享出去要显示的图片
+ * @param callback 分享后的回调
+ * @returns {{title: *, path: *, imageUrl: *, success: success, complete: complete}}
+ */
+
+3.copyText
+/**
+ * 全局复制函数
+ * @param str1 需要复制的文字
+ * @param str2 提示文字
+ */
+
+4.downloadImg
+/**
+ * 上传图片得到url地址
+ * @param imgUrl
+ * @param callback
+ */
+
+5.getOpenId
+/**
+ * 获取openId
+ * @param {*} code  wx.login获取
+ * @param {*} appid
+ */
+
+6.verifyPhone
+/**
+ * 验证手机号码
+ * @param str
+ * @returns {boolean}
+ */
+
+7.getCurrentPageUrl
+/*获取当前页url*/
+
+8.getCurrentPageUrlWithArgs
+/*获取当前页带参数的url*/
+
+二、api.js 收集整个程序的接口路径
+    引入方式：import API from './api';
+
+三、wxRequest.js 独立封装使用的wx.request请求方式。
+    引入：const wxRequest = require('文件路径');
+    用法：wxRequest.fetch(url, token, data, type).then(res => {
+        //请求成功，但是不代表接口返回成功，不一定success，根据状态码去判断
+    }).catch(req=>{
+        //请求过程有错误，或者上面代码有问题，作为异常捕获
+    })
+    参数：url:请求路径；token：鉴权={ type: 'bearer', value: token }，非鉴权=null;data:请求参数；type:请求方式=（GET，POST，PUT，DELETE...）
+
+四、AuthProvider.js 鉴权中心，处理用户登录系统，存储token，刷新token，获取token等操作
+    引入：const AuthProvider = require('文件路径');
+    用法：AuthProvider.getAccessToken().then(token => {
+        return wxRequest.fetch(url, token, data, type);
+    }).then(res=>{
+        //请求成功，但是不代表接口返回成功，不一定success，根据状态码去判断
+    }).catch(req=>{
+        //请求过程有错误，或者上面代码有问题，作为异常捕获
+    })
+
+五、uploadFile.js 媒体文件上传封装类
+    引入：const  wxUploadFile = require('文件路径');
+    用法：AuthProvider.getAccessToken().then(token => {
+                        return wxUploadFile.uploadFile(url, imgUrl, token);
+                    }).then(result => {
+                        //请求成功，但是不代表接口返回成功，不一定success，根据状态码去判断
+                    }).catch(requset=>{
+                        //请求过程有错误，或者上面代码有问题，作为异常捕获
+                    })
+    参数：url：上传图片路径；imgUrl：图片本地地址；token:鉴权token
+
+
+
+
+组件：
+1.message全局信息提示组件：主要用于错误提示，友情提示
+    script:
+        data = {
+            popErrorMsg:null
+        }
+        import Message from '../components/message';
+        components = {
+            Message: Message,
+        }
+    template:
+        <Message wx:if="{{popErrorMsg}}" :msg.sync='popErrorMsg'></Message>
+
+2.getUserInfo组件：授权组件
+    script:
+        data = {
+            btnTxt: '立即授权'
+        }
+        import GetUserInfo from '../components/getUserInfo'
+        components = {
+            GetUserInfo: GetUserInfo,
+        }
+
+    template:
+        <GetUserInfo :btnTxt.sync="btnTxt" :that="this"></GetUserInfo>
+
+3.fromIdBtn 发送fromId组件：主要用于处理用户在触发摸个函数时，需要采集用户的点击行为，用于发送模板消息。
+    script:
+        import FromIdBtn from '../components/fromIdBtn'
+        components = {
+            FromIdBtn: FromIdBtn,
+        }
+        data = {
+            Send_FromId:"按钮的text",
+            auther:false,//是否走鉴权接口发送fromId，有的时候是没有授权的情况下就需要采集了
+        }
+        changeBtn(){}//自定义处理函数，在发送fromId的同时，处理用户触发的操作
+    template:
+        <FromIdBtn :btx.sync="Send_FromId" :auther="auther" :changeBtn="changeBtn"></FromIdBtn>
+
+4.countDown 倒计时组件： 含有hms
+    script:
+        import CountDown from '../components/countDown'
+        data=  {
+            CountDown: 1531735703828,
+        }
+        components ={
+            CountDown:CountDown
+        }
+    template:
+        <CountDown :timer.sync="CountDown"></CountDown>
+    注：在一个页面使用到多个倒计时组件时，需要区分组件。
+        import CountDown from '../components/countDown'
+        import CountDown1 from '../components/countDown'
+        import CountDown2 from '../components/countDown'
+        import CountDown3 from '../components/countDown'
+        ......
+5.timeDown 倒计时组件，只有s
+    script:
+        import TimeDown from '../components/timeDown'
+        components ={
+            TimeDown:TimeDown
+        }
+    template:
+        <TimeDown :clickBtn="Functions"></TimeDown>
+    参数：Functions 处理函数

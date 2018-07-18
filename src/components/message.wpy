@@ -1,0 +1,35 @@
+<template>
+  <view class="ad_popError">{{msg}}</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+export default class Message extends wepy.component {
+  props = {
+    msg: {
+      type: String,
+      default: '',
+      twoWay: true
+    }
+  }
+}
+</script>
+<style lang="less">
+.ad_popError {
+  z-index: 9999;
+  position: fixed;
+  width: 600rpx;
+  font-size: 28rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 10rpx;
+  color: #eaeaea;
+  background: rgba(0, 0, 0, 0.7);
+}
+</style>

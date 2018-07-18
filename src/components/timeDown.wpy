@@ -1,0 +1,28 @@
+<template>
+    <view @tap.stop='getCodeBtn'>{{countTime}}</view>
+</template>
+<script>
+import wepy from 'wepy'
+import Util from '../utils/util.js'
+export default class TimeDown extends wepy.component {
+  data = {
+    countTime: '获取验证码',
+    countTimeState: true
+  }
+  props = {
+    clickBtn: {
+      type: Function,
+      default: {}
+    }
+  }
+  onLoad() {}
+  methods = {
+    getCodeBtn() {
+      if (this.countTimeState) {
+        this.clickBtn()
+        Util.count_down(this, 60000)
+      }
+    }
+  }
+}
+</script>

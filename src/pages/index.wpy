@@ -1,0 +1,89 @@
+<style lang="less">
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.userinfo-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.userinfo-nickname {
+  color: #aaa;
+}
+</style>
+<template>
+  <view class="main">
+    <view @tap='showTips'>我的GEMII</view>
+    <GetUserInfo :btnTxt.sync="btnTxt" :that="this"></GetUserInfo>
+    <CountDown :timer.sync="CountDown"></CountDown>
+    <CountDown1 :timer.sync="CountDown1"></CountDown1>
+    <CountDown2 :timer.sync="CountDown2"></CountDown2>
+    <CountDown3 :timer.sync="CountDown3"></CountDown3>
+    <TimeDown :clickBtn="Functions"></TimeDown>
+    <FromIdBtn :btx.sync="Send_FromId" :auther="auther" :changeBtn="changeBtn"></FromIdBtn>
+    <Message wx:if="{{popErrorMsg}}" :msg.sync='popErrorMsg'></Message>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Util from '../utils/util.js'
+import Message from '../components/message'
+import GetUserInfo from '../components/getUserInfo'
+import CountDown from '../components/countDown'
+import CountDown1 from '../components/countDown'
+import CountDown2 from '../components/countDown'
+import CountDown3 from '../components/countDown'
+import FromIdBtn from '../components/fromIdBtn'
+import TimeDown from '../components/timeDown'
+
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: 'GEMII'
+  }
+  components = {
+    Message: Message,
+    GetUserInfo: GetUserInfo,
+    CountDown: CountDown,
+    CountDown1: CountDown1,
+    CountDown2: CountDown2,
+    CountDown3: CountDown3,
+    FromIdBtn: FromIdBtn,
+    TimeDown: TimeDown
+  }
+
+  data = {
+    userInfo: {
+      nickName: '加载中...'
+    },
+    Send_FromId: 'Send FromId',
+    auther: false,
+    popErrorMsg: null,
+    btnTxt: '立即授权',
+    CountDown: 1531735703828,
+    CountDown1: 1531745703828,
+    CountDown2: 1531755703828,
+    CountDown3: 1531765703828
+  }
+
+  computed = {}
+  changeBtn() {
+    Util.ErrorTips(this.$parent, 'Function is start!', 2000)
+  }
+  Functions() {
+    Util.ErrorTips(this.$parent, 'This is a function!', 2000)
+  }
+  methods = {
+    showTips: function(e) {
+      Util.ErrorTips(this, 'show this Error tips!', 3000)
+    }
+  }
+  onLoad() {
+    let _this = this
+  }
+}
+</script>

@@ -1,0 +1,32 @@
+<template>
+  <view>{{countTime}}</view>
+</template>
+<script>
+import wepy from 'wepy'
+import Util from '../utils/util.js'
+export default class CountDown extends wepy.component {
+  data = {
+    countTime: '00:00:00'
+  }
+  props = {
+    timer: {
+      type: Number,
+      default: 0
+    }
+  }
+  onLoad() {
+    this.count_down()
+  }
+  count_down() {
+    let timeC = Math.floor((this.timer - Date.now()) / 1000)
+    this.countTime = Util.countDownTime(timeC)
+    this.$apply()
+    if (timeC <= 0) return
+    setTimeout(() => {
+      this.count_down()
+    }, 1000)
+  }
+  methods = {}
+}
+</script>
+

@@ -1,0 +1,41 @@
+<template>
+  <view class="formBox">
+    <form @submit="formSubmit" report-submit>
+      <button formType="submit" @tap='clickBtn'>{{btx}}</button>
+    </form>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+import Util from '../utils/util.js'
+export default class FromIdBtn extends wepy.component {
+  props = {
+    btx: {
+      type: String,
+      default: ''
+    },
+    auther: {
+      type: Boolean,
+      default: true
+    },
+    changeBtn: {
+      type: Function,
+      default: {}
+    }
+  }
+  methods = {
+    formSubmit: function(e) {
+      this.auther ? Util.formSubmitAuther(e) : Util.formSubmitNuther(e)
+    },
+    clickBtn() {
+      this.changeBtn()
+    }
+  }
+}
+</script>
+<style lang="less">
+.formBox {
+  width: 100%;
+}
+</style>
+
