@@ -31,7 +31,7 @@ Promise.prototype.finally = function (callback) {
 };
 
 function wxRequest(url, token, data, type) {
-  let datas = JSON.stringify(data)
+  let datas = JSON.stringify(data);
   console.log("---request start---");
   console.log(`url: ${url}`);
   console.log("request type&data: ");

@@ -58,6 +58,15 @@
 8.getCurrentPageUrlWithArgs
 /*获取当前页带参数的url*/
 
+9.Log
+/**
+ * 依据所需要日志的需要，传入参数，来控制在不同的环境打印日志
+ * 避免不必要的日志污染
+ * @param str 打印日志
+ * @param type 环境 D开发,T测试,P/ 生产
+ * @constructor
+ */
+
 二、api.js 收集整个程序的接口路径
     引入方式：import API from './api';
 

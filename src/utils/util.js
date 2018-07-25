@@ -3,6 +3,46 @@ let AuthProvider = require('./AuthProvider');
 let wxRequest = require('./wxRequest');
 import API from './api';
 
+
+console.log(API.ENV);
+
+/**
+ *
+ * @param str 打印日志
+ * @param type 环境 D开发,T测试,P/ 生产
+ * @constructor
+ */
+function Log(str,type) {
+  switch (API.ENV){
+    case "DEV"://开发
+      showLog(str,type);
+      break;
+    case "TEST"://测试
+      showLog(str,type);
+      break;
+    case "PRO"://生产
+      showLog(str,type);
+      break;
+  }
+}
+
+function showLog(str,type) {
+  switch (type){
+    case "D":
+      console.log("开发调试：");
+      console.log(str);
+      break;
+    case "T":
+      console.log("测试辅助：");
+      console.log(str);
+      break;
+    case "P":
+    default:
+      console.log("生产辅助：");
+      console.log(str);
+      break;
+  }
+}
 /*
 * 页面跳转函数
 * @param path 跳转路径 部分可携带参数
@@ -314,5 +354,6 @@ module.exports = {
   verifyPhone: verifyPhone,
   getCurrentPageUrl: getCurrentPageUrl,
   getCurrentPageUrlWithArgs: getCurrentPageUrlWithArgs,
-  countDownTime: countDownTime
+  countDownTime: countDownTime,
+  Log:Log
 };

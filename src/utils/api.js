@@ -6,6 +6,9 @@ const USER_LOGIN = ORIGIN_NAME + '/basis-api/noauth/';//授权绑定，用户登
 const TOKEN = ORIGIN_NAME + '/uaa/oauth/token?';//获取token
 
 const api = {
+  // ENV:'DEV',//开发环境
+  ENV:'TEST',//开发环境
+  // ENV:'PRO',//开发环境
   SECRET: "bGl6LXlvdWxpLXd4OnNlY3JldA==", //base64加密liz-youli-wx:secret 栗子集市
   APP_ID: 'wx655b79f74ee85585', //APPID 栗子集市
 
